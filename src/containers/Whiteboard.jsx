@@ -6,21 +6,20 @@ import { Grid } from "@material-ui/core";
 const useStyles = makeStyles((theme) => {
   return {
     root: {
-      height: "50px",
-      position: "fixed",
-      zIndex: 1,
-      backgroundColor: theme.palette.background.default,
+      height: "100%",
+      zIndex: 0,
+      backgroundColor: theme.palette.background.paper,
     },
   };
 });
 
-const Top = ({ children }) => {
+const Whiteboard = ({ children }) => {
   const classes = useStyles();
   return (
     <Grid
       container
       item
-      direction="row"
+      direction="column"
       justify="center"
       alignItems="center"
       className={classes.root}
@@ -30,8 +29,8 @@ const Top = ({ children }) => {
   );
 };
 
-Top.propTypes = {
+Whiteboard.propTypes = {
   children: PropTypes.oneOfType([PropTypes.object, PropTypes.array]),
 };
 
-export default Top;
+export default Whiteboard;

@@ -1,10 +1,12 @@
 import React from "react";
-import { Switch, Route, withRouter } from "react-router-dom";
+import { Switch, Route } from "react-router-dom";
+import Navigation from "./components/Navigation";
+import NotFound from "./components/NotFound";
 
 const App = () => {
   return (
     <Switch>
-      <Route path="/:user" exact>
+      <Route path="/" exact>
         <h1>Home</h1>
       </Route>
       <Route path="/register">
@@ -14,7 +16,8 @@ const App = () => {
         <h1>Login</h1>
       </Route>
       <Route path="*">
-        <h1>Not found</h1>
+        <Navigation page="404 Page" />
+        <NotFound />
       </Route>
     </Switch>
   );

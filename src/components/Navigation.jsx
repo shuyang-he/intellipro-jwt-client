@@ -11,7 +11,6 @@ import {
 } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import HomeIcon from "@material-ui/icons/Home";
-import { NoEmitOnErrorsPlugin } from "webpack";
 
 const useStyles = makeStyles((theme) => {
   return {
@@ -32,14 +31,14 @@ const useStyles = makeStyles((theme) => {
 });
 
 const Navigation = ({ page }) => {
-  const classes = useStyles();
-  const { user } = useParams();
-  const location = useLocation();
-
-  const [path, setPath] = useState(location.pathname);
   const [showRegister, setShowRegister] = useState(true);
   const [showLogin, setShowLogin] = useState(true);
   const [showLogout, setShowLogout] = useState(true);
+
+  const classes = useStyles();
+  const { user } = useParams();
+  const location = useLocation();
+  const path = location.pathname;
 
   useEffect(() => {
     const updateNavLinks = () => {
@@ -88,17 +87,21 @@ const Navigation = ({ page }) => {
           <Typography variant="h6" className={classes.title}>
             {page}
           </Typography>
-          <Button color="inherit">
-            <Link to="/register" className={classes.navLinks}>
-              Register
-            </Link>
-          </Button>
-          <Button color="inherit">
-            <Link to="/login" className={classes.navLinks}>
-              Login
-            </Link>
-          </Button>
-          <Button color="inherit">Logout</Button>
+          {showRegister ? (
+            <Button color="inherit">
+              <Link to="/register" className={classes.navLinks}>
+                Register
+              </Link>
+            </Button>
+          ) : null}
+          {showLogin ? (
+            <Button color="inherit">
+              <Link to="/login" className={classes.navLinks}>
+                Login
+              </Link>
+            </Button>
+          ) : null}
+          {showLogout ? <Button color="inherit">Logout</Button> : null}
         </Toolbar>
       </AppBar>
     </Top>

@@ -1,22 +1,24 @@
 import React from "react";
 import { Switch, Route } from "react-router-dom";
 import Navigation from "./components/Navigation";
+import RegisterForm from "./components/RegisterForm";
 import NotFound from "./components/NotFound";
 
 const App = () => {
   return (
     <Switch>
       <Route path="/" exact>
-        <h1>Home</h1>
+        <Navigation page="Home" />
       </Route>
       <Route path="/register">
-        <h1>Register</h1>
+        <Navigation page="Register" />
+        <RegisterForm />
       </Route>
       <Route path="/login">
-        <h1>Login</h1>
+        <Navigation page="Login" />
       </Route>
       <Route path="*">
-        <Navigation page="404 Page" />
+        <Navigation page="Page 404" />
         <NotFound />
       </Route>
     </Switch>

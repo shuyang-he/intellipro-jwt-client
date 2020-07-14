@@ -6,7 +6,8 @@ import { Grid } from "@material-ui/core";
 const useStyles = makeStyles((theme) => {
   return {
     root: {
-      height: "100%",
+      marginTop: "64px",
+      height: "1000px",
       zIndex: 0,
       backgroundColor: theme.palette.background.paper,
     },

@@ -1,5 +1,8 @@
 import React, { useState, useEffect } from "react";
 import PropTypes from "prop-types";
+import { Redirect } from "react-router-dom";
+import { connect } from "react-redux";
+import { logout } from "../actions/Logout";
 import { Link, useParams, useLocation } from "react-router-dom";
 import Top from "../containers/Top";
 import {
@@ -30,7 +33,7 @@ const useStyles = makeStyles((theme) => {
   };
 });
 
-const Navigation = ({ page }) => {
+const Navigation = ({ page, loginSuccess, logout }) => {
   const [showRegister, setShowRegister] = useState(true);
   const [showLogin, setShowLogin] = useState(true);
   const [showLogout, setShowLogout] = useState(true);
@@ -55,14 +58,14 @@ const Navigation = ({ page }) => {
         setShowLogin(false);
         setShowLogout(false);
       } else {
-        if (user === "") {
-          setShowRegister(false);
-          setShowLogin(false);
-          setShowLogout(false);
-        } else {
+        if (loginSuccess) {
           setShowRegister(false);
           setShowLogin(false);
           setShowLogout(true);
+        } else {
+          setShowRegister(false);
+          setShowLogin(false);
+          setShowLogout(false);
         }
       }
     };
@@ -85,7 +88,7 @@ const Navigation = ({ page }) => {
             </Link>
           </IconButton>
           <Typography variant="h6" className={classes.title}>
-            {page}
+            {user === undefined ? page : user}
           </Typography>
           {showRegister ? (
             <Button color="inherit">
@@ -101,7 +104,17 @@ const Navigation = ({ page }) => {
               </Link>
             </Button>
           ) : null}
-          {showLogout ? <Button color="inherit">Logout</Button> : null}
+          {showLogout ? (
+            <Button
+              color="inherit"
+              onClick={(event) => {
+                event.preventDefault();
+                logout();
+              }}
+            >
+              Logout
+            </Button>
+          ) : null}
         </Toolbar>
       </AppBar>
     </Top>
@@ -110,6 +123,22 @@ const Navigation = ({ page }) => {
 
 Navigation.proptypes = {
   page: PropTypes.string,
+  loginSuccess: PropTypes.bool,
+  logout: PropTypes.func,
 };
 
-export default Navigation;
+const mapStateToProps = (state) => {
+  return {
+    loginSuccess: state.loginSuccess,
+  };
+};
+
+const mapDispatchToProps = (dispatch) => {
+  return {
+    logout: () => {
+      logout(dispatch);
+    },
+  };
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(Navigation);

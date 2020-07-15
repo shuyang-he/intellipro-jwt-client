@@ -6,7 +6,7 @@ import { Grid } from "@material-ui/core";
 const useStyles = makeStyles((theme) => {
   return {
     root: {
-      height: "50px",
+      height: "64px",
       position: "fixed",
       zIndex: 1,
       backgroundColor: theme.palette.background.default,

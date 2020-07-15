@@ -1,5 +1,7 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
+import { connect } from "react-redux";
+import { checkLoginStatus } from "../actions/Login";
 import { Redirect } from "react-router-dom";
 import {
   Typography,
@@ -10,30 +12,26 @@ import {
 } from "@material-ui/core";
 import Whiteboard from "../containers/Whiteboard";
 
-class RegisterForm extends Component {
+class LoginForm extends Component {
   constructor(props) {
     super(props);
     this.state = {
       username: "",
       password: "",
-      lastname: "",
-      firstname: "",
-      gender: "",
-      registerLoading: false,
-      registerSuccess: false,
+      loginLoading: false,
     };
     this.handleChange = this.handleChange.bind(this);
-    this.registerSubmit = this.registerSubmit.bind(this);
+    this.loginSubmit = this.loginSubmit.bind(this);
   }
 
   handleChange(event) {
     this.setState({ [event.target.name]: event.target.value });
   }
 
-  async registerSubmit() {
-    this.setState({ registerLoading: true });
+  async loginSubmit() {
+    this.setState({ loginLoading: true });
     try {
-      const resJson = await fetch("/api/users/register", {
+      const resJson = await fetch("/api/users/login", {
         method: "POST",
         headers: {
           "content-type": "application/json",
@@ -41,24 +39,16 @@ class RegisterForm extends Component {
         body: JSON.stringify({
           username: this.state.username,
           password: this.state.password,
-          data: {
-            lastname: this.state.lastname,
-            firstname: this.state.firstname,
-            gender: this.state.gender,
-          },
         }),
       });
       const res = await resJson.json();
-      if (res.success) {
-        this.setState({ registerSuccess: true });
-      } else {
-        this.setState({ registerSuccess: false });
-      }
+      const { exist, valid } = res;
+      this.props.checkLoginStatus(exist, valid);
     } catch (error) {
-      this.setState({ registerSuccess: false });
+      this.props.checkLoginStatus(false, false);
       console.log(error);
     } finally {
-      this.setState({ registerLoading: false });
+      this.setState({ loginLoading: false });
     }
   }
 
@@ -68,7 +58,7 @@ class RegisterForm extends Component {
         <form
           onSubmit={(event) => {
             event.preventDefault();
-            this.registerSubmit();
+            this.loginSubmit();
           }}
         >
           <Grid
@@ -106,39 +96,6 @@ class RegisterForm extends Component {
                 }}
               />
             </Grid>
-            <Grid container item direction="column">
-              <Typography variant="h6">Lastname</Typography>
-              <TextField
-                label="Lastname"
-                variant="outlined"
-                name="lastname"
-                onChange={(event) => {
-                  this.handleChange(event);
-                }}
-              />
-            </Grid>
-            <Grid container item direction="column">
-              <Typography variant="h6">Firstname</Typography>
-              <TextField
-                label="Firstname"
-                variant="outlined"
-                name="firstname"
-                onChange={(event) => {
-                  this.handleChange(event);
-                }}
-              />
-            </Grid>
-            <Grid container item direction="column">
-              <Typography variant="h6">Gender</Typography>
-              <TextField
-                label="Gender"
-                variant="outlined"
-                name="gender"
-                onChange={(event) => {
-                  this.handleChange(event);
-                }}
-              />
-            </Grid>
             <Button type="submit">Submit</Button>
           </Grid>
         </form>
@@ -149,11 +106,11 @@ class RegisterForm extends Component {
         <CircularProgress />
       </Whiteboard>
     );
-    const redirect = <Redirect to="/" />;
-    if (this.state.registerSuccess && !this.state.registerLoading) {
+    const redirect = <Redirect to={"/" + this.state.username} />;
+    if (this.props.loginSuccess && !this.state.loginLoading) {
       return redirect;
     } else {
-      if (this.state.registerLoading) {
+      if (this.state.loginLoading) {
         return loading;
       } else {
         return form;
@@ -162,6 +119,23 @@ class RegisterForm extends Component {
   }
 }
 
-RegisterForm.propTypes = {};
+LoginForm.propTypes = {
+  loginSuccess: PropTypes.bool,
+  checkLoginStatus: PropTypes.func,
+};
 
-export default RegisterForm;
+const mapStateToProps = (state) => {
+  return {
+    loginSuccess: state.loginSuccess,
+  };
+};
+
+const mapDispatchToProps = (dispatch) => {
+  return {
+    checkLoginStatus: (exist, valid) => {
+      checkLoginStatus(exist, valid, dispatch);
+    },
+  };
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(LoginForm);

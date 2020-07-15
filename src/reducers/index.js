@@ -1,6 +1,8 @@
 import { combineReducers } from "redux";
-import loading from "./Loading";
+import loginSuccess from "./LoginSuccess";
+import logoutLoading from "./LogoutLoading";
 
 export default combineReducers({
-  loading,
+  loginSuccess,
+  logoutLoading,
 });

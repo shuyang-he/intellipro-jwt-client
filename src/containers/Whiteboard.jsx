@@ -7,7 +7,7 @@ const useStyles = makeStyles((theme) => {
   return {
     root: {
       marginTop: "64px",
-      height: "1000px",
+      height: "100%",
       zIndex: 0,
       backgroundColor: theme.palette.background.paper,
     },

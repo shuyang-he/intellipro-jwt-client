@@ -1,11 +1,9 @@
-import Cookies from "js-cookie";
-
 export const getProfile = () => {
   return async (dispatch) => {
     dispatch({
       type: "PROFILE_LOADING",
     });
-    const token = Cookies.get("jwt");
+    const token = localStorage.getItem("jwt");
     try {
       const resJson = await fetch("/api/users/profile", {
         method: "GET",

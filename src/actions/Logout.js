@@ -15,6 +15,7 @@ export const logout = () => {
         dispatch({
           type: "LOGOUT_SUCCESS",
         });
+        localStorage.removeItem("jwt");
       } else {
         dispatch({
           type: "LOGOUT_FAILURE",

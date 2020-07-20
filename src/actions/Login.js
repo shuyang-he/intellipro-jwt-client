@@ -12,12 +12,13 @@ export const loginSubmit = (user) => {
         body: JSON.stringify(user),
       });
       const res = await resJson.json();
-      const { success, exist, valid, data } = res;
+      const { success, exist, valid, data, token } = res;
       if (success) {
         dispatch({
           type: "LOGIN_SUCCESS",
           payload: data,
         });
+        localStorage.setItem("jwt", token);
       } else {
         dispatch({
           type: "LOGIN_FAILURE",

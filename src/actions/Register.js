@@ -1,28 +1,29 @@
-export const logout = () => {
+export const registerSubmit = (user) => {
   return async (dispatch) => {
     dispatch({
-      type: "LOGOUT_LOADING",
+      type: "REGISTER_LOADING",
     });
     try {
-      const resJson = await fetch("/api/users/logout", {
-        method: "GET",
+      const resJson = await fetch("/api/users/register", {
+        method: "POST",
         headers: {
           "content-type": "application/json",
         },
+        body: JSON.stringify(user),
       });
       const res = await resJson.json();
       if (res.success) {
         dispatch({
-          type: "LOGOUT_SUCCESS",
+          type: "REGISTER_SUCCESS",
         });
       } else {
         dispatch({
-          type: "LOGOUT_FAILURE",
+          type: "REGISTER_FAILURE",
         });
       }
     } catch (error) {
       dispatch({
-        type: "LOGOUT_FAILURE",
+        type: "REGISTER_FAILURE",
       });
       console.log(error);
     }

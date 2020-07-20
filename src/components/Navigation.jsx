@@ -3,7 +3,7 @@ import PropTypes from "prop-types";
 import { Redirect } from "react-router-dom";
 import { connect } from "react-redux";
 import { logout } from "../actions/Logout";
-import { Link, useParams, useLocation } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import Top from "../containers/Top";
 import {
   AppBar,
@@ -33,36 +33,41 @@ const useStyles = makeStyles((theme) => {
   };
 });
 
-const Navigation = ({ page, loginSuccess, logout }) => {
+const Navigation = ({ user, logout }) => {
   const [showRegister, setShowRegister] = useState(true);
   const [showLogin, setShowLogin] = useState(true);
   const [showLogout, setShowLogout] = useState(true);
+  const [page, setPage] = useState("");
 
   const classes = useStyles();
-  const { user } = useParams();
   const location = useLocation();
   const path = location.pathname;
 
   useEffect(() => {
     const updateNavLinks = () => {
       if (path === "/") {
+        setPage("Home");
         setShowRegister(true);
         setShowLogin(true);
         setShowLogout(false);
       } else if (path === "/register") {
+        setPage("Register");
         setShowRegister(false);
         setShowLogin(true);
         setShowLogout(false);
       } else if (path === "/login") {
+        setPage("Login");
         setShowRegister(true);
         setShowLogin(false);
         setShowLogout(false);
       } else {
-        if (loginSuccess) {
+        if (user) {
+          setPage(path.slice(1));
           setShowRegister(false);
           setShowLogin(false);
           setShowLogout(true);
         } else {
+          setPage("Page 404");
           setShowRegister(false);
           setShowLogin(false);
           setShowLogout(false);
@@ -88,7 +93,7 @@ const Navigation = ({ page, loginSuccess, logout }) => {
             </Link>
           </IconButton>
           <Typography variant="h6" className={classes.title}>
-            {user === undefined ? page : user}
+            {page}
           </Typography>
           {showRegister ? (
             <Button color="inherit">
@@ -123,20 +128,20 @@ const Navigation = ({ page, loginSuccess, logout }) => {
 
 Navigation.proptypes = {
   page: PropTypes.string,
-  loginSuccess: PropTypes.bool,
+  user: PropTypes.object,
   logout: PropTypes.func,
 };
 
 const mapStateToProps = (state) => {
   return {
-    loginSuccess: state.loginSuccess,
+    user: state.user.user,
   };
 };
 
 const mapDispatchToProps = (dispatch) => {
   return {
     logout: () => {
-      logout(dispatch);
+      dispatch(logout());
     },
   };
 };

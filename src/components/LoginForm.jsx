@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
-import { checkLoginStatus } from "../actions/Login";
+import { loginSubmit } from "../actions/Login";
 import { Redirect } from "react-router-dom";
 import {
   Typography,
@@ -18,7 +18,6 @@ class LoginForm extends Component {
     this.state = {
       username: "",
       password: "",
-      loginLoading: false,
     };
     this.handleChange = this.handleChange.bind(this);
     this.loginSubmit = this.loginSubmit.bind(this);
@@ -28,39 +27,19 @@ class LoginForm extends Component {
     this.setState({ [event.target.name]: event.target.value });
   }
 
-  async loginSubmit() {
-    this.setState({ loginLoading: true });
-    try {
-      const resJson = await fetch("/api/users/login", {
-        method: "POST",
-        headers: {
-          "content-type": "application/json",
-        },
-        body: JSON.stringify({
-          username: this.state.username,
-          password: this.state.password,
-        }),
-      });
-      const res = await resJson.json();
-      const { exist, valid } = res;
-      this.props.checkLoginStatus(exist, valid);
-    } catch (error) {
-      this.props.checkLoginStatus(false, false);
-      console.log(error);
-    } finally {
-      this.setState({ loginLoading: false });
-    }
+  loginSubmit(event) {
+    event.preventDefault();
+    const user = {
+      username: this.state.username,
+      password: this.state.password,
+    };
+    this.props.loginSubmit(user);
   }
 
   render() {
     const form = (
       <Whiteboard>
-        <form
-          onSubmit={(event) => {
-            event.preventDefault();
-            this.loginSubmit();
-          }}
-        >
+        <form onSubmit={this.loginSubmit}>
           <Grid
             container
             item
@@ -76,9 +55,7 @@ class LoginForm extends Component {
                 helperText="username"
                 variant="outlined"
                 name="username"
-                onChange={(event) => {
-                  this.handleChange(event);
-                }}
+                onChange={this.handleChange}
               />
             </Grid>
             <Grid container item direction="column">
@@ -91,9 +68,7 @@ class LoginForm extends Component {
                 autoComplete="current-password"
                 variant="outlined"
                 name="password"
-                onChange={(event) => {
-                  this.handleChange(event);
-                }}
+                onChange={this.handleChange}
               />
             </Grid>
             <Button type="submit">Submit</Button>
@@ -107,10 +82,10 @@ class LoginForm extends Component {
       </Whiteboard>
     );
     const redirect = <Redirect to={"/" + this.state.username} />;
-    if (this.props.loginSuccess && !this.state.loginLoading) {
+    if (Object.keys(this.props.user).length !== 0 && !this.props.loginLoading) {
       return redirect;
     } else {
-      if (this.state.loginLoading) {
+      if (this.props.loginLoading) {
         return loading;
       } else {
         return form;
@@ -120,20 +95,22 @@ class LoginForm extends Component {
 }
 
 LoginForm.propTypes = {
-  loginSuccess: PropTypes.bool,
-  checkLoginStatus: PropTypes.func,
+  loginLoading: PropTypes.bool,
+  user: PropTypes.object,
+  loginSubmit: PropTypes.func,
 };
 
 const mapStateToProps = (state) => {
   return {
-    loginSuccess: state.loginSuccess,
+    loginLoading: state.loginLoading,
+    user: state.user.user,
   };
 };
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    checkLoginStatus: (exist, valid) => {
-      checkLoginStatus(exist, valid, dispatch);
+    loginSubmit: (user) => {
+      dispatch(loginSubmit(user));
     },
   };
 };

@@ -1,5 +1,7 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
+import { connect } from "react-redux";
+import { registerSubmit } from "../actions/Register";
 import { Redirect } from "react-router-dom";
 import {
   Typography,
@@ -19,8 +21,6 @@ class RegisterForm extends Component {
       lastname: "",
       firstname: "",
       gender: "",
-      registerLoading: false,
-      registerSuccess: false,
     };
     this.handleChange = this.handleChange.bind(this);
     this.registerSubmit = this.registerSubmit.bind(this);
@@ -30,47 +30,24 @@ class RegisterForm extends Component {
     this.setState({ [event.target.name]: event.target.value });
   }
 
-  async registerSubmit() {
-    this.setState({ registerLoading: true });
-    try {
-      const resJson = await fetch("/api/users/register", {
-        method: "POST",
-        headers: {
-          "content-type": "application/json",
-        },
-        body: JSON.stringify({
-          username: this.state.username,
-          password: this.state.password,
-          data: {
-            lastname: this.state.lastname,
-            firstname: this.state.firstname,
-            gender: this.state.gender,
-          },
-        }),
-      });
-      const res = await resJson.json();
-      if (res.success) {
-        this.setState({ registerSuccess: true });
-      } else {
-        this.setState({ registerSuccess: false });
-      }
-    } catch (error) {
-      this.setState({ registerSuccess: false });
-      console.log(error);
-    } finally {
-      this.setState({ registerLoading: false });
-    }
+  registerSubmit(event) {
+    event.preventDefault();
+    const user = {
+      username: this.state.username,
+      password: this.state.password,
+      data: {
+        lastname: this.state.lastname,
+        firstname: this.state.firstname,
+        gender: this.state.gender,
+      },
+    };
+    this.props.registerSubmit(user);
   }
 
   render() {
     const form = (
       <Whiteboard>
-        <form
-          onSubmit={(event) => {
-            event.preventDefault();
-            this.registerSubmit();
-          }}
-        >
+        <form onSubmit={this.registerSubmit}>
           <Grid
             container
             item
@@ -86,9 +63,7 @@ class RegisterForm extends Component {
                 helperText="username"
                 variant="outlined"
                 name="username"
-                onChange={(event) => {
-                  this.handleChange(event);
-                }}
+                onChange={this.handleChange}
               />
             </Grid>
             <Grid container item direction="column">
@@ -101,9 +76,7 @@ class RegisterForm extends Component {
                 autoComplete="current-password"
                 variant="outlined"
                 name="password"
-                onChange={(event) => {
-                  this.handleChange(event);
-                }}
+                onChange={this.handleChange}
               />
             </Grid>
             <Grid container item direction="column">
@@ -112,9 +85,7 @@ class RegisterForm extends Component {
                 label="Lastname"
                 variant="outlined"
                 name="lastname"
-                onChange={(event) => {
-                  this.handleChange(event);
-                }}
+                onChange={this.handleChange}
               />
             </Grid>
             <Grid container item direction="column">
@@ -123,9 +94,7 @@ class RegisterForm extends Component {
                 label="Firstname"
                 variant="outlined"
                 name="firstname"
-                onChange={(event) => {
-                  this.handleChange(event);
-                }}
+                onChange={this.handleChange}
               />
             </Grid>
             <Grid container item direction="column">
@@ -134,9 +103,7 @@ class RegisterForm extends Component {
                 label="Gender"
                 variant="outlined"
                 name="gender"
-                onChange={(event) => {
-                  this.handleChange(event);
-                }}
+                onChange={this.handleChange}
               />
             </Grid>
             <Button type="submit">Submit</Button>
@@ -150,10 +117,10 @@ class RegisterForm extends Component {
       </Whiteboard>
     );
     const redirect = <Redirect to="/" />;
-    if (this.state.registerSuccess && !this.state.registerLoading) {
+    if (this.props.registerSuccess && !this.props.registerLoading) {
       return redirect;
     } else {
-      if (this.state.registerLoading) {
+      if (this.props.registerLoading) {
         return loading;
       } else {
         return form;
@@ -162,6 +129,25 @@ class RegisterForm extends Component {
   }
 }
 
-RegisterForm.propTypes = {};
+RegisterForm.propTypes = {
+  registerLoading: PropTypes.bool,
+  registerSuccess: PropTypes.bool,
+  registerSubmit: PropTypes.func,
+};
 
-export default RegisterForm;
+const mapStateToProps = (state) => {
+  return {
+    registerLoading: state.registerLoading,
+    registerSuccess: state.registerSuccess,
+  };
+};
+
+const mapDispatchToProps = (dispatch) => {
+  return {
+    registerSubmit: (user) => {
+      dispatch(registerSubmit(user));
+    },
+  };
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(RegisterForm);

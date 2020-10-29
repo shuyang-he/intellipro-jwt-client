@@ -4,7 +4,7 @@ export const logout = () => {
       type: "LOGOUT_LOADING",
     });
     try {
-      const resJson = await fetch("/api/users/logout", {
+      const resJson = await fetch("http://localhost:8000/api/users/logout", {
         method: "GET",
         headers: {
           "content-type": "application/json",

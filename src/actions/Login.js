@@ -4,7 +4,7 @@ export const loginSubmit = (user) => {
       type: "LOGIN_LOADING",
     });
     try {
-      const resJson = await fetch("/api/users/login", {
+      const resJson = await fetch("http://localhost:8000/api/users/login", {
         method: "POST",
         headers: {
           "content-type": "application/json",

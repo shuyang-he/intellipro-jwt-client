@@ -7,7 +7,7 @@ export const getProfile = () => {
     });
     const token = Cookies.get("jwt");
     try {
-      const resJson = await fetch("/api/users/profile", {
+      const resJson = await fetch("http://localhost:8000/api/users/profile", {
         method: "GET",
         headers: {
           "Content-Type": "application/json",

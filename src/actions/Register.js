@@ -4,7 +4,7 @@ export const registerSubmit = (user) => {
       type: "REGISTER_LOADING",
     });
     try {
-      const resJson = await fetch("/api/users/register", {
+      const resJson = await fetch("http://localhost:8000/api/users/register", {
         method: "POST",
         headers: {
           "content-type": "application/json",
